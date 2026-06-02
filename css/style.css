@@ -1,0 +1,314 @@
+/* =============================================================
+   style.css — Estilos globales
+   Sistema de Control de Asistencia
+   Paleta principal: #005377 (azul petróleo) + #06A77D (verde esmeralda)
+   ============================================================= */
+
+/* ── VARIABLES GLOBALES ─────────────────────────────────────── */
+:root {
+    --fondo-oscuro:     #c1edfc;        /* Fondo principal — derivado de #005377 más oscuro */
+    --fondo-medio:      #003d52;        /* Fondo tarjeta */
+    --fondo-header:     #004060;        /* Header top bar */
+    --borde:            #005377;        /* Bordes sutiles */
+    --acento:           #06A77D;        /* Verde esmeralda — botones, focos */
+    --acento-hover:     #059068;        /* Verde más oscuro para hover */
+    --acento-suave:     rgba(6,167,125,0.12); /* Fondo suave acento */
+    --azul-acento:      #0e7fa8;        /* Azul derivado de #005377 para detalles */
+    --verde:            #06A77D;        /* Éxito */
+    --rojo:             #e05260;        /* Error */
+    --amarillo:         #f0a500;        /* Info / advertencia */
+    --texto:            #d6eef5;        /* Texto principal */
+    --texto-muted:      #7fb8cc;        /* Texto secundario / placeholders */
+    --radio:            14px;
+    --radio-input:      8px;
+}
+
+/* ── RESET BÁSICO ───────────────────────────────────────────── */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* ── BODY / FONDO ───────────────────────────────────────────── */
+body {
+    min-height: 100dvh;
+    background-color: var(--fondo-oscuro);
+    background-image:
+        radial-gradient(circle at 1px 1px, rgba(6,167,125,0.10) 1px, transparent 0);
+    background-size: 32px 32px;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--texto);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* Sin padding lateral: el header debe ocupar el 100% del viewport */
+    padding: 0;
+    margin: 0;
+}
+
+/* ── HEADER SUPERIOR ────────────────────────────────────────── */
+.top-header {
+    /* Ocupa todo el ancho del viewport ignorando cualquier padding del padre */
+    width: 100vw;
+    background-color: var(--fondo-header);
+    border-bottom: 1px solid var(--borde);
+    box-shadow: 0 2px 0 var(--acento);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2rem;
+    height: 58px;
+    /* Fijo arriba para que siempre sea visible */
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    margin-bottom: 3rem;
+}
+
+/* Logo + nombre del sistema (izquierda) */
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+}
+
+.brand-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--acento);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.brand-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.95rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--texto);
+    font-weight: 600;
+}
+
+/* Botón de administrador (derecha del header) */
+.btn-admin-header {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--texto-muted);
+    text-decoration: none;
+    padding: 0.45rem 0.9rem;
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-input);
+    transition: color 0.2s, border-color 0.2s, background 0.2s;
+}
+
+.btn-admin-header:hover {
+    color: var(--acento);
+    border-color: var(--acento);
+    background: var(--acento-suave);
+}
+
+/* ── ÁREA DE CONTENIDO CENTRAL ──────────────────────────────── */
+.contenido {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    gap: 1.5rem;
+    flex: 1;
+    justify-content: center;
+    padding: 3rem 1rem 2rem;
+}
+
+/* ── TARJETA PRINCIPAL ──────────────────────────────────────── */
+.card {
+    background: var(--fondo-medio);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio);
+    padding: 2.5rem 2rem;
+    width: 100%;
+    max-width: 440px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Línea de acento verde en la parte superior de la tarjeta */
+.card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--acento), var(--azul-acento), transparent);
+}
+
+/* ── ENCABEZADO DE LA TARJETA ───────────────────────────────── */
+.card-header {
+    margin-bottom: 2rem;
+}
+
+.card-header h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.65rem;
+    font-weight: 700;
+    color: #e8f7f2;
+    line-height: 1.2;
+    margin-bottom: 0.4rem;
+}
+
+.card-header p {
+    font-size: 0.88rem;
+    color: var(--texto-muted);
+    line-height: 1.5;
+}
+
+/* ── MENSAJES DE RETROALIMENTACIÓN ──────────────────────────── */
+.alerta {
+    border-radius: var(--radio-input);
+    padding: 0.85rem 1rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.88rem;
+    font-weight: 500;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    border-left: 3px solid transparent;
+}
+
+.alerta svg {
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+.alerta-exito {
+    background: rgba(6,167,125,0.12);
+    border-color: var(--verde);
+    color: #5df5c6;
+}
+
+.alerta-error {
+    background: rgba(224,82,96,0.1);
+    border-color: var(--rojo);
+    color: #fca5a5;
+}
+
+.alerta-info {
+    background: rgba(240,165,0,0.1);
+    border-color: var(--amarillo);
+    color: #fde68a;
+}
+
+/* ── GRUPOS DE CAMPOS ───────────────────────────────────────── */
+.campo-grupo {
+    margin-bottom: 1.25rem;
+}
+
+.campo-grupo label {
+    display: block;
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--texto-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 0.5rem;
+}
+
+/* ── INPUTS ─────────────────────────────────────────────────── */
+.campo-grupo input {
+    width: 100%;
+    background: rgba(0, 83, 119, 0.25);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-input);
+    color: var(--texto);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1rem;
+    padding: 0.75rem 1rem;
+    transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+    outline: none;
+}
+
+.campo-grupo input:focus {
+    border-color: var(--acento);
+    background: rgba(6,167,125,0.08);
+    box-shadow: 0 0 0 3px rgba(6,167,125,0.18);
+}
+
+.campo-grupo input::placeholder {
+    color: rgba(127,184,204,0.4);
+}
+
+/* PIN: monoespaciado y centrado */
+#pin {
+    font-family: 'Courier New', monospace;
+    letter-spacing: 0.5em;
+    font-size: 1.3rem;
+    text-align: center;
+}
+
+/* ── TEXTO DE AYUDA ─────────────────────────────────────────── */
+.campo-ayuda {
+    font-size: 0.78rem;
+    color: var(--texto-muted);
+    margin-top: 0.35rem;
+}
+
+/* ── BOTÓN PRINCIPAL ────────────────────────────────────────── */
+.btn-registrar {
+    width: 100%;
+    background: var(--acento);
+    color: #fff;
+    border: none;
+    border-radius: var(--radio-input);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1rem;
+    font-weight: 500;
+    padding: 0.85rem;
+    cursor: pointer;
+    margin-top: 0.5rem;
+    transition: background 0.2s, transform 0.1s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.btn-registrar:hover {
+    background: var(--acento-hover);
+}
+
+.btn-registrar:active {
+    transform: scale(0.98);
+}
+
+/* ── PIE DE PÁGINA ──────────────────────────────────────────── */
+footer {
+    font-size: 0.78rem;
+    color: rgba(127,184,204,0.4);
+    text-align: center;
+    padding: 1rem 0 0.5rem;
+}
+
+/* ── RESPONSIVE ─────────────────────────────────────────────── */
+@media (max-width: 600px) {
+    .top-header {
+        padding: 0 1rem;
+    }
+    .brand-name {
+        font-size: 0.82rem;
+    }
+    .btn-admin-header span {
+        display: none; /* Oculta el texto, deja solo el ícono en móvil */
+    }
+    .card {
+        padding: 2rem 1.25rem;
+    }
+    .card-header h1 {
+        font-size: 1.4rem;
+    }
+}
