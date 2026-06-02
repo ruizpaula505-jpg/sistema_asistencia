@@ -122,17 +122,23 @@ unset($_SESSION['mensaje'], $_SESSION['tipo_mensaje']);
                     <p class="campo-ayuda">4 dígitos numéricos. Asignado por el administrador.</p>
                 </div>
 
-                <!-- Nuevo campo fecha y hora -->
+                <!-- Campo no editable de fecha y hora -->
                 <div class="campo-grupo">
-                    <label for="fecha_hora">Fecha y hora para registrar</label>
+                    <label>Fecha y hora de registro</label>
                     <input
-                        type="datetime-local"
+                        type="text"
+                        value="<?= date('Y-m-d H:i') ?>"
+                        readonly
+                        tabindex="-1"
+                        style="background-color:#eee; cursor:not-allowed;"
+                    >
+                    <input
+                        type="hidden"
                         id="fecha_hora"
                         name="fecha_hora"
-                        required
-                        value="<?= date('Y-m-d\TH:i') ?>"
+                        value="<?= date('Y-m-d H:i:s') ?>"
                     >
-                    <p class="campo-ayuda">Selecciona la fecha y hora que quieres registrar.</p>
+                    <p class="campo-ayuda">La fecha y hora se registran automáticamente desde el sistema.</p>
                 </div>
 
                 <button type="submit" class="btn-registrar">
@@ -164,6 +170,6 @@ unset($_SESSION['mensaje'], $_SESSION['tipo_mensaje']);
 
         document.getElementById('documento').focus();
     </script>
-
+<?php include("includes/footer.php"); ?>
 </body>
 </html>
