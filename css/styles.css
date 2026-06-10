@@ -1,0 +1,85 @@
+/* =========================================================
+ *  admin.css — Estilos globales del panel administrador
+ *  Se enlaza desde includes/header.php para todas las vistas.
+ * ========================================================= */
+
+/* Variables CSS globales reutilizables en todo el proyecto */
+:root {
+    --sa-primary:      #2563eb;   /* Azul principal */
+    --sa-primary-dark: #1d4ed8;   /* Azul oscuro para hover */
+    --sa-bg:           #f0f4f8;   /* Fondo gris claro de las páginas admin */
+}
+
+/* Fondo gris claro en todas las páginas admin y altura mínima de pantalla completa */
+body {
+    background: var(--sa-bg);
+    min-height: 100vh;
+}
+
+/* Estilo del texto de la marca en la navbar */
+.navbar-brand {
+    font-weight: 600;
+    letter-spacing: -0.02em;
+}
+
+/* Tarjetas sin borde y con esquinas redondeadas */
+.card {
+    border: none;
+    border-radius: 1rem;
+}
+
+/* Cabecera de tarjeta con degradado azul, usada en el login y formularios */
+.card-header-sa {
+    background: linear-gradient(135deg, var(--sa-primary), var(--sa-primary-dark));
+    color: #fff;
+    /* !important sobreescribe el border-radius de Bootstrap */
+    border-radius: 1rem 1rem 0 0 !important;
+    padding: 1.25rem 1.5rem;
+}
+
+/* Tarjetas de estadísticas del dashboard con línea azul a la izquierda */
+.stat-card {
+    border-left: 4px solid var(--sa-primary);
+    /* transition suaviza el efecto hover */
+    transition: transform .15s ease;
+}
+
+/* Al pasar el mouse la tarjeta sube 2px */
+.stat-card:hover {
+    transform: translateY(-2px);
+}
+
+/* Sobreescribe el color del botón primario de Bootstrap */
+.btn-primary {
+    background: var(--sa-primary);
+    border-color: var(--sa-primary);
+}
+
+/* Color más oscuro al pasar el mouse sobre el botón */
+.btn-primary:hover {
+    background: var(--sa-primary-dark);
+    border-color: var(--sa-primary-dark);
+}
+
+/* Fondo degradado azul para la página pública del empleado (index.php) */
+.hero-empleado {
+    background: linear-gradient(160deg, #1e3a5f 0%, #2563eb 55%, #3b82f6 100%);
+    min-height: 100vh;
+    /* flex permite que el footer quede pegado al fondo */
+    display: flex;
+    flex-direction: column;
+}
+
+/* Tarjeta del formulario de asistencia con sombra pronunciada */
+.hero-empleado .card {
+    border-radius: 1.25rem;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, .25);
+}
+
+/* Badge semitransparente para mostrar fecha/hora en el header público */
+.clock-badge {
+    background: rgba(255, 255, 255, .15);
+    border-radius: .75rem;
+    padding: .5rem 1rem;
+    font-size: .9rem;
+}
