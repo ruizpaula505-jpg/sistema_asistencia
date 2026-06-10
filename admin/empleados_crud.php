@@ -223,8 +223,8 @@ $empleados = $stmt->fetchAll();
 /* =========================================================
  *  VISTA HTML — empleados_crud.php
  * ========================================================= */
-
-// header.php ya fue incluido por auth_admin.php al inicio
+// se direcciona para el header
+require_once __DIR__ . '/../includes/header.php';
 ?>
 
 <div class="container pb-5">
