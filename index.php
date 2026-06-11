@@ -1,42 +1,46 @@
+
 <?php
 /* =========================================================
- *  LÓGICA PHP — index.php
+ *  index.php — Vista pública del empleado
+ *  Único acceso para empleados según el taller.
  * ========================================================= */
-
-session_start();
-
-require_once 'config/db.php';
-require_once 'includes/funciones.php';
-
+ 
+session_start(); // Inicia la sesión para flash messages
+ 
+require_once __DIR__ . '/config/db.php';           // Clase Database para la conexión PDO
+require_once __DIR__ . '/includes/funciones.php';  // Funciones auxiliares (e(), procesarAsistencia, etc.)
+ 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
     $documento = trim($_POST['documento'] ?? '');
     $pin       = trim($_POST['pin']       ?? '');
-
+ 
     $db  = new Database();
     $pdo = $db->conectar();
-
-    $resultado = procesarAsistencia($pdo, $documento, $pin);
-
+ 
+    $resultado = procesarAsistencia($pdo, $documento, $pin); // Registra entrada o salida según el estado del día
+ 
+    // Guarda el resultado en sesión para mostrarlo después del redirect (patrón PRG)
     $_SESSION['mensaje']        = $resultado['mensaje'];
     $_SESSION['tipo_mensaje']   = $resultado['exito'] ? 'exito' : 'error';
-    $_SESSION['last_documento'] = $documento;
-
-    header('Location: index.php');
+    $_SESSION['last_documento'] = $documento; // Conserva el documento para repoblar el input
+ 
+    header('Location: index.php'); // Redirige para evitar reenvío del formulario al recargar
     exit;
 }
-
+ 
+// Lee los datos de sesión dejados por el POST y los limpia inmediatamente (flash message)
 $mensaje      = $_SESSION['mensaje']        ?? null;
 $tipo_mensaje = $_SESSION['tipo_mensaje']   ?? null;
 $lastDoc      = $_SESSION['last_documento'] ?? null;
 $anio         = date('Y');
-
-unset($_SESSION['mensaje'], $_SESSION['tipo_mensaje'], $_SESSION['last_documento']);
-
+ 
+unset($_SESSION['mensaje'], $_SESSION['tipo_mensaje'], $_SESSION['last_documento']); // Se muestra solo una vez
+ 
 $tituloPagina = 'Control de Asistencia — Empleados';
-require_once __DIR__ . '/includes/header.php';
+// CORREGIDO: index.php está en la raíz, usa header_public (sin ../ en la ruta del CSS)
+require_once __DIR__ . '/includes/header_public.php';
 ?>
-
+ 
 <style>
     :root {
         --sa-primary:      #2563eb;
@@ -51,13 +55,11 @@ require_once __DIR__ . '/includes/header.php';
     .card { border: none; border-radius: 1.25rem; }
     .btn-primary { background: var(--sa-primary); border-color: var(--sa-primary); }
     .btn-primary:hover { background: var(--sa-primary-dark); border-color: var(--sa-primary-dark); }
-    .form-control:read-only { background-color: #e9ecef; cursor: not-allowed; }
     .info-panel {
         background: var(--sa-glass);
         border: 1px solid var(--sa-glass-border);
         border-radius: 1.25rem;
         padding: 1.25rem;
-        height: auto;
         display: flex;
         flex-direction: column;
         gap: 1rem;
@@ -73,15 +75,11 @@ require_once __DIR__ . '/includes/header.php';
     }
     .feature-title { font-size: 0.9rem; font-weight: 600; color: #ffffff; margin: 0 0 0.2rem; }
     .feature-text { font-size: 0.82rem; color: rgba(255,255,255,0.65); margin: 0; line-height: 1.5; }
-    .tech-badge {
-        font-size: 0.73rem; font-weight: 600; padding: 0.25rem 0.6rem;
-        border-radius: 20px; background: rgba(255,255,255,0.12);
-        color: rgba(255,255,255,0.85); border: 1px solid rgba(255,255,255,0.18);
-    }
     #reloj { font-variant-numeric: tabular-nums; }
     @media (max-width: 991.98px) { .info-panel { height: auto; margin-top: 0; } }
 </style>
-
+ 
+<!-- Navbar con reloj y botón de acceso admin -->
 <nav class="navbar navbar-dark px-4 py-3" style="background: rgba(0,0,0,.2);">
     <a class="navbar-brand d-flex align-items-center gap-2 fw-semibold" href="#">
         <i class="bi bi-clock-history fs-5"></i>
@@ -90,7 +88,7 @@ require_once __DIR__ . '/includes/header.php';
     <div class="d-flex align-items-center gap-3">
         <span class="text-white opacity-75 small d-flex align-items-center gap-1">
             <i class="bi bi-calendar-event"></i>
-            <span id="reloj"><?= date('d/m/Y H:i:s') ?></span>
+            <span id="reloj"><?= date('d/m/Y H:i:s') ?></span> <!-- Hora inicial del servidor; JS la actualiza cada segundo -->
         </span>
         <a href="admin/login.php" class="btn btn-outline-light btn-sm d-flex align-items-center gap-2">
             <i class="bi bi-shield-lock"></i>
@@ -99,11 +97,12 @@ require_once __DIR__ . '/includes/header.php';
         </a>
     </div>
 </nav>
-
+ 
 <main class="flex-grow-1 d-flex align-items-center justify-content-center py-5">
     <div class="container-xl px-4">
         <div class="row g-4 align-items-start justify-content-center">
-
+ 
+            <!-- Formulario de registro de asistencia -->
             <div class="col-12 col-lg-5">
                 <div class="card shadow-lg">
                     <div class="text-white text-center py-4 px-4 rounded-top"
@@ -114,10 +113,11 @@ require_once __DIR__ . '/includes/header.php';
                             Ingresa tu documento y PIN para registrar tu entrada o salida.
                         </p>
                     </div>
-
+ 
                     <div class="card-body p-4">
                         <?php if ($mensaje): ?>
                             <?php
+                            // Convierte el tipo interno ('exito'/'error') a clase Bootstrap y su ícono
                             $bsClase = match($tipo_mensaje) {
                                 'exito' => 'success',
                                 'error' => 'danger',
@@ -131,11 +131,11 @@ require_once __DIR__ . '/includes/header.php';
                             ?>
                             <div class="alert alert-<?= $bsClase ?> alert-dismissible d-flex align-items-center gap-2 fade show" role="alert">
                                 <i class="bi <?= $icono ?>"></i>
-                                <span><?= htmlspecialchars($mensaje, ENT_QUOTES, 'UTF-8') ?></span>
+                                <span><?= e($mensaje) ?></span>
                                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
                             </div>
                         <?php endif; ?>
-
+ 
                         <form method="POST" action="index.php" novalidate>
                             <div class="mb-3">
                                 <label for="documento" class="form-label fw-medium">
@@ -143,22 +143,22 @@ require_once __DIR__ . '/includes/header.php';
                                     Documento de identidad
                                 </label>
                                 <input type="text" class="form-control" id="documento" name="documento"
-                                    placeholder="Ej: 1234567890" maxlength="15" autocomplete="off"
-                                    value="<?= htmlspecialchars($lastDoc ?? '', ENT_QUOTES, 'UTF-8') ?>">
+                                    placeholder="Ej: 1234567890" maxlength="20" autocomplete="off"
+                                    value="<?= e($lastDoc ?? '') ?>"> <!-- Repobla el campo si hubo error -->
                                 <div class="form-text">Cédula o documento asignado por la empresa.</div>
                             </div>
-
+ 
                             <div class="mb-4">
                                 <label for="pin" class="form-label fw-medium">
                                     <i class="bi bi-key me-1 text-primary"></i>
                                     PIN de acceso
                                 </label>
                                 <input type="password" class="form-control" id="pin" name="pin"
-                                    placeholder="••••" maxlength="4" minlength="4"
-                                    inputmode="numeric" autocomplete="off">
-                                <div class="form-text">4 dígitos numéricos. Asignado por el administrador.</div>
+                                    placeholder="••••" maxlength="4" inputmode="numeric" autocomplete="off">
+                                <!-- inputmode="numeric" muestra teclado numérico en móvil -->
+                                <div class="form-text">4 dígitos numéricos asignados por el administrador.</div>
                             </div>
-
+ 
                             <div class="d-grid">
                                 <button type="submit" class="btn btn-primary btn-lg d-flex align-items-center justify-content-center gap-2">
                                     <i class="bi bi-box-arrow-in-right fs-5"></i>
@@ -169,7 +169,8 @@ require_once __DIR__ . '/includes/header.php';
                     </div>
                 </div>
             </div>
-
+ 
+            <!-- Panel informativo del sistema -->
             <div class="col-12 col-lg-6">
                 <div class="info-panel">
                     <div>
@@ -183,66 +184,59 @@ require_once __DIR__ . '/includes/header.php';
                             de empleados usando la hora exacta del servidor.
                         </p>
                     </div>
-
+ 
                     <hr class="info-divider">
-
-                    <div>
-                        <p class="info-desc mb-3" style="font-size:0.78rem;text-transform:uppercase;letter-spacing:0.07em;opacity:0.6;">
-                            ¿Qué hace este sistema?
-                        </p>
-
-                        <div class="feature-item mb-3">
-                            <div class="feature-icon"><i class="bi bi-clock-fill"></i></div>
-                            <div>
-                                <p class="feature-title">Hora automática del servidor</p>
-                                <p class="feature-text">
-                                    Captura el timestamp exacto del servidor (<code style="color:#93c5fd;">NOW()</code> en MySQL).
-                                </p>
-                            </div>
+ 
+                    <div class="feature-item">
+                        <div class="feature-icon"><i class="bi bi-clock-fill"></i></div>
+                        <div>
+                            <p class="feature-title">Hora automática del servidor</p>
+                            <p class="feature-text">Captura el timestamp exacto con <code style="color:#93c5fd;">NOW()</code> en MySQL.</p>
                         </div>
-
-                        <div class="feature-item mb-3">
-                            <div class="feature-icon"><i class="bi bi-arrow-left-right"></i></div>
-                            <div>
-                                <p class="feature-title">Entrada y salida inteligente</p>
-                                <p class="feature-text">
-                                    Detecta automáticamente si es entrada o salida según el estado del día.
-                                </p>
-                            </div>
+                    </div>
+ 
+                    <div class="feature-item">
+                        <div class="feature-icon"><i class="bi bi-arrow-left-right"></i></div>
+                        <div>
+                            <p class="feature-title">Entrada y salida inteligente</p>
+                            <p class="feature-text">Detecta automáticamente si es entrada o salida según el estado del día.</p>
                         </div>
-
-                        <div class="feature-item">
-                            <div class="feature-icon"><i class="bi bi-shield-lock-fill"></i></div>
-                            <div>
-                                <p class="feature-title">Seguridad de credenciales</p>
-                                <p class="feature-text">
-                                    PINs protegidos con (<code style="color:#93c5fd;">password_hash</code>).
-                                </p>
-                            </div>
+                    </div>
+ 
+                    <div class="feature-item">
+                        <div class="feature-icon"><i class="bi bi-shield-lock-fill"></i></div>
+                        <div>
+                            <p class="feature-title">Seguridad de credenciales</p>
+                            <p class="feature-text">Contraseñas protegidas con <code style="color:#93c5fd;">password_hash</code>.</p>
                         </div>
                     </div>
                 </div>
             </div>
-
+ 
         </div>
     </div>
 </main>
-
+ 
 <footer class="text-center text-white py-3 opacity-50 small">
-    Sistema de Control de Asistencia &mdash; <?= $anio ?>
+    Sistema de Control de Asistencia &mdash; <?= $anio ?> <!-- $anio se calculó al inicio del archivo -->
 </footer>
-
+ 
 <script>
+    // Filtra caracteres no numéricos del campo PIN en tiempo real
     document.getElementById('pin').addEventListener('input', function () {
         this.value = this.value.replace(/\D/g, '');
     });
+ 
+    // Actualiza el reloj cada segundo usando la hora local del navegador
     setInterval(() => {
         const ahora = new Date();
         const fecha = ahora.toLocaleDateString('es-CO', { day: '2-digit', month: '2-digit', year: 'numeric' });
         const hora  = ahora.toLocaleTimeString('es-CO');
         document.getElementById('reloj').textContent = fecha + ' ' + hora;
     }, 1000);
-    document.getElementById('documento').focus();
+ 
+    document.getElementById('documento').focus(); // Pone el cursor en el campo documento al cargar
 </script>
-
+ 
 <?php require_once __DIR__ . '/includes/footer.php'; ?>
+ 

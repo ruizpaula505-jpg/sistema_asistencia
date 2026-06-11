@@ -1,60 +1,53 @@
 <?php
 /* =========================================================
  *  admin/dashboard.php
- * =========================================================
- *  ORDEN CORRECTO DE INCLUDES:
- *  1. funciones.php  → define e() y demás funciones
- *  2. auth_admin.php → verifica sesión (ya puede usar e() si lo necesitara)
- *  3. db.php         → conexión BD
- *  4. lógica PHP     → consultas, variables
- *  5. header.php     → abre <html>, <head>, <body>, navbar
- *  6. contenido HTML
- *  7. footer.php     → cierra </body> </html>
+ *  Orden: funciones → auth → db → lógica → header → HTML → footer
  * ========================================================= */
 
-// 1. Funciones PRIMERO — e() debe existir antes que header.php
-require_once __DIR__ . '/../includes/funciones.php';
+require_once __DIR__ . '/../includes/funciones.php';  // Funciones auxiliares (e(), obtenerIdTipo, etc.)
+require_once __DIR__ . '/../includes/auth_admin.php'; // Verifica sesión activa; redirige al login si no hay
+require_once __DIR__ . '/../config/db.php';           // Clase Database para la conexión PDO
 
-// 2. Verificar sesión (no llama a header.php adentro)
-require_once __DIR__ . '/../includes/auth_admin.php';
-
-// 3. Conexión BD
-require_once __DIR__ . '/../config/db.php';
-
-// 4. Lógica y consultas
 $db  = new Database();
-$pdo = $db->conectar();
+$pdo = $db->conectar(); // Establece la conexión con la base de datos
 
-$idEmpleado     = obtenerIdTipo($pdo, 'Empleado');
+$idEmpleado     = obtenerIdTipo($pdo, 'Empleado'); // Obtiene el ID del tipo 'Empleado'
 $totalEmpleados = 0;
 $asistenciasHoy = 0;
 
 if ($idEmpleado !== null) {
+    // Cuenta cuántos usuarios tienen el tipo Empleado
     $stmt = $pdo->prepare('SELECT COUNT(*) AS total FROM users WHERE id_tipo = ?');
     $stmt->execute([$idEmpleado]);
     $totalEmpleados = (int) $stmt->fetch()['total'];
 }
 
-$stmt = $pdo->query(
-    'SELECT COUNT(*) AS total FROM asistencias WHERE DATE(fecha_entrada) = CURDATE()'
-);
+// Cuenta los registros de asistencia del día actual
+$stmt = $pdo->query('SELECT COUNT(*) AS total FROM asistencias WHERE DATE(fecha_entrada) = CURDATE()');
 $asistenciasHoy = (int) $stmt->fetch()['total'];
 
-$nombreAdmin  = $_SESSION['admin_nombre'] ?? $_SESSION['admin_id'];
+$nombreAdmin  = $_SESSION['admin_nombre'] ?? $_SESSION['admin_id']; // Nombre del admin para mostrar en pantalla
 $tituloPagina = 'Dashboard';
-
-// 5. Header — ahora sí e() ya existe cuando header.php se ejecuta
 require_once __DIR__ . '/../includes/header.php';
 ?>
 
-<!-- 6. Contenido -->
-<div class="container pb-5">
+<div class="container py-5">
+
+    <nav class="navbar navbar-light bg-white shadow-sm mb-4 px-4">
+        <span class="navbar-brand fw-bold">
+            <i class="bi bi-clock-history me-2 text-primary"></i>AsistenciaApp
+        </span>
+        <a href="../logout.php" class="btn btn-outline-danger btn-sm">
+            <i class="bi bi-box-arrow-right me-1"></i>Cerrar sesión
+        </a>
+    </nav>
 
     <div class="mb-4">
         <h1 class="h3 fw-bold">Bienvenido, <?= e($nombreAdmin) ?></h1>
         <p class="text-muted mb-0">Panel de gestión de empleados y asistencias.</p>
     </div>
 
+    <!-- Tarjetas de estadísticas -->
     <div class="row g-4 mb-4">
         <div class="col-md-6">
             <div class="card shadow-sm stat-card h-100">
@@ -89,15 +82,14 @@ require_once __DIR__ . '/../includes/header.php';
         </div>
     </div>
 
+    <!-- Accesos rápidos -->
     <div class="row g-4 justify-content-center">
         <div class="col-md-4">
             <div class="card shadow-sm h-100">
                 <div class="card-body d-flex flex-column">
                     <i class="bi bi-person-plus text-primary fs-3 mb-2"></i>
                     <h2 class="h5">Empleados</h2>
-                    <p class="text-muted flex-grow-1">
-                        Crear, consultar y editar empleados. Cambio de PIN con validación.
-                    </p>
+                    <p class="text-muted flex-grow-1">Crear, consultar y editar empleados. Cambio de PIN con validación.</p>
                     <a href="empleados_crud.php" class="btn btn-primary">Gestionar empleados</a>
                 </div>
             </div>
@@ -108,9 +100,7 @@ require_once __DIR__ . '/../includes/header.php';
                 <div class="card-body d-flex flex-column">
                     <i class="bi bi-bar-chart-line text-success fs-3 mb-2"></i>
                     <h2 class="h5">Reportes</h2>
-                    <p class="text-muted flex-grow-1">
-                        Consultar asistencias por rango de fechas y exportar CSV.
-                    </p>
+                    <p class="text-muted flex-grow-1">Consultar asistencias por rango de fechas y exportar CSV.</p>
                     <a href="reportes.php" class="btn btn-primary">Ver reportes</a>
                 </div>
             </div>
@@ -119,7 +109,4 @@ require_once __DIR__ . '/../includes/header.php';
 
 </div>
 
-<?php
-// 7. Footer
-require_once __DIR__ . '/../includes/footer.php';
-?>
+<?php require_once __DIR__ . '/../includes/footer.php'; ?>
