@@ -14,6 +14,14 @@
 body {
     background: var(--sa-bg);
     min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+footer {
+    margin-top: auto;
 }
 
 /* Estilo del texto de la marca en la navbar */

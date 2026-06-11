@@ -8,9 +8,9 @@
 
 // Verifica si $tituloPagina fue definida en el archivo que hace el include
 // Si no existe, asigna un título genérico por defecto
-if (!isset($tituloPagina)) {
-    $tituloPagina = 'Sistema de Asistencia';
-}
+// if (!isset($tituloPagina)) {
+//     $tituloPagina = 'Sistema de Asistencia';
+// }
 ?>
 <!DOCTYPE html>
 <!-- lang="es" indica al navegador que el contenido está en español -->
@@ -31,4 +31,4 @@ if (!isset($tituloPagina)) {
     <link href="../css/styles.css" rel="stylesheet">
 </head>
 <!-- El </body> y </html> los cierra footer.php -->
-<body>
+<body class="d-flex flex-column min-vh-100">

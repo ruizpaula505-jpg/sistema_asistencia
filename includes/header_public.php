@@ -5,10 +5,10 @@
  *  La ruta al CSS es directa sin ../ porque está en raíz.
  * ========================================================= */
 
-if (!isset($tituloPagina)) {
-    $tituloPagina = 'Sistema de Asistencia';
-}
-?>
+// if (!isset($tituloPagina)) {
+//     $tituloPagina = 'Sistema de Asistencia';
+// }
+// ?>
 <!DOCTYPE html>
 <html lang="es">
 <head>

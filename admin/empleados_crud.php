@@ -200,7 +200,7 @@ require_once __DIR__ . '/../includes/header.php';
                     <i class="bi bi-arrow-left me-1"></i>Volver
                 </a>
             <?php endif; ?>
-            <a href="dashboard.php" class="btn btn-outline-secondary btn-sm">
+            <a href="dashboard.php" class="btn btn-outline-secondary btn-sm d-flex align-items-center">
                 <i class="bi bi-house me-1"></i>Menú
             </a>
         </div>
